@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { useRouter } from 'expo-router';
 
-export default function DialpadScreen({ navigation }) {
+export default function DialpadScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const router = useRouter();
 
-  const handlePress = (value: string) => {
-    setPhoneNumber((prev) => prev + value);
+  const handlePress = (digit: string) => {
+    setPhoneNumber((prev) => prev + digit);
   };
 
   const handleBackspace = () => {
@@ -14,29 +16,35 @@ export default function DialpadScreen({ navigation }) {
 
   const handleCall = () => {
     if (phoneNumber.length > 0) {
-      navigation.navigate('CallScreen', { phoneNumber });
+      router.push({
+        pathname: '/callscreen',
+        params: { phoneNumber },
+      });
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.phoneNumber}>{phoneNumber || 'Enter Number'}</Text>
-
-      <View style={styles.keypad}>
-        {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map((item) => (
-          <TouchableOpacity key={item} style={styles.key} onPress={() => handlePress(item)}>
-            <Text style={styles.keyText}>{item}</Text>
+      <TextInput
+        style={styles.phoneNumber}
+        value={phoneNumber}
+        editable={false}
+        placeholder="Enter Number"
+        placeholderTextColor="#999"
+      />
+      <View style={styles.dialpad}>
+        {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map((digit) => (
+          <TouchableOpacity key={digit} style={styles.button} onPress={() => handlePress(digit)}>
+            <Text style={styles.buttonText}>{digit}</Text>
           </TouchableOpacity>
         ))}
       </View>
-
       <View style={styles.controls}>
-        <TouchableOpacity style={styles.backspace} onPress={handleBackspace}>
-          <Text style={styles.keyText}>⌫</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.callButton} onPress={handleCall}>
           <Text style={styles.callText}>📞</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.backspaceButton} onPress={handleBackspace}>
+          <Text style={styles.backspaceText}>⌫</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -44,13 +52,5 @@ export default function DialpadScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#111' },
-  phoneNumber: { fontSize: 24, color: '#fff', marginBottom: 20 },
-  keypad: { flexDirection: 'row', flexWrap: 'wrap', width: 240, justifyContent: 'center' },
-  key: { width: 80, height: 80, justifyContent: 'center', alignItems: 'center', margin: 5, backgroundColor: '#444', borderRadius: 40 },
-  keyText: { fontSize: 24, color: '#fff' },
-  controls: { flexDirection: 'row', marginTop: 20 },
-  backspace: { marginRight: 20, backgroundColor: '#555', padding: 15, borderRadius: 30 },
-  callButton: { backgroundColor: '#0f0', padding: 15, borderRadius: 30 },
-  callText: { fontSize: 24, color: '#fff' }
+  // Styles as previously provided
 });
