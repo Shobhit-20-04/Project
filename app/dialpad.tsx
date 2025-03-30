@@ -1,48 +1,56 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Dialpad = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const navigation = useNavigation();
+const DialPad = ({ navigation }: any) => {
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   const handlePress = (num: string) => {
     setPhoneNumber((prev) => prev + num);
   };
 
-  const handleBackspace = () => {
+  const handleDelete = () => {
     setPhoneNumber((prev) => prev.slice(0, -1));
   };
 
   const handleCall = () => {
-    if (phoneNumber.length > 0) {
-      navigation.navigate("callscreen", { phoneNumber });
-    }
+    navigation.navigate('CallScreen', { phoneNumber });
   };
+
+  const renderButton = (num: string) => (
+    <TouchableOpacity style={styles.button} onPress={() => handlePress(num)}>
+      <Text style={styles.buttonText}>{num}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.phoneNumber}>{phoneNumber || "Enter Number"}</Text>
-      <View style={styles.dialPad}>
-        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"].map(
-          (num) => (
-            <TouchableOpacity
-              key={num}
-              style={styles.dialButton}
-              onPress={() => handlePress(num)}
-            >
-              <Text style={styles.dialText}>{num}</Text>
-            </TouchableOpacity>
-          )
-        )}
+      <Text style={styles.phoneNumber}>{phoneNumber}</Text>
+      <View style={styles.row}>
+        {renderButton('1')}
+        {renderButton('2')}
+        {renderButton('3')}
+      </View>
+      <View style={styles.row}>
+        {renderButton('4')}
+        {renderButton('5')}
+        {renderButton('6')}
+      </View>
+      <View style={styles.row}>
+        {renderButton('7')}
+        {renderButton('8')}
+        {renderButton('9')}
+      </View>
+      <View style={styles.row}>
+        {renderButton('*')}
+        {renderButton('0')}
+        {renderButton('#')}
       </View>
       <View style={styles.actionRow}>
-        <TouchableOpacity onPress={handleBackspace} style={styles.iconButton}>
-          <Ionicons name="backspace" size={30} color="white" />
+        <TouchableOpacity style={styles.callButton} onPress={handleCall}>
+          <Text style={styles.callButtonText}>Call</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleCall} style={styles.callButton}>
-          <Ionicons name="call" size={30} color="white" />
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+          <Text style={styles.deleteButtonText}>⌫</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -52,53 +60,55 @@ const Dialpad = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#121212",
-    paddingBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
   },
   phoneNumber: {
     fontSize: 28,
-    fontWeight: "bold",
-    color: "white",
     marginBottom: 20,
+    color: '#333',
   },
-  dialPad: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    width: "80%",
-    justifyContent: "center",
-  },
-  dialButton: {
-    width: 80,
-    height: 80,
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 8,
-    borderRadius: 40,
-    backgroundColor: "#333",
-  },
-  dialText: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "white",
+  row: {
+    flexDirection: 'row',
   },
   actionRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginTop: 20,
-    justifyContent: "center",
   },
-  iconButton: {
-    padding: 15,
-    marginHorizontal: 20,
-    borderRadius: 50,
-    backgroundColor: "#444",
+  button: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    margin: 10,
+    elevation: 5,
+  },
+  buttonText: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   callButton: {
+    backgroundColor: 'green',
     padding: 15,
     borderRadius: 50,
-    backgroundColor: "green",
+    marginRight: 20,
+  },
+  callButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 15,
+    borderRadius: 50,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontSize: 18,
   },
 });
 
-export default Dialpad;
+export default DialPad;
