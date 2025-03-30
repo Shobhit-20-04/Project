@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useNavigation } from "@react-navigation/native";
 
-const DialPad = ({ navigation }: any) => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+// ✅ Define the route types
+type RootStackParamList = {
+  callscreen: { phoneNumber: string };
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList, "callscreen">;
+
+const Dialpad = () => {
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const navigation = useNavigation<NavigationProp>(); // ✅ Fix: Correctly type navigation
 
   const handlePress = (num: string) => {
     setPhoneNumber((prev) => prev + num);
@@ -13,44 +23,33 @@ const DialPad = ({ navigation }: any) => {
   };
 
   const handleCall = () => {
-    navigation.navigate('CallScreen', { phoneNumber });
+    if (phoneNumber.length > 0) {
+      navigation.navigate("callscreen", { phoneNumber }); // ✅ Fix: TypeScript now recognizes this
+    }
   };
-
-  const renderButton = (num: string) => (
-    <TouchableOpacity style={styles.button} onPress={() => handlePress(num)}>
-      <Text style={styles.buttonText}>{num}</Text>
-    </TouchableOpacity>
-  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.phoneNumber}>{phoneNumber}</Text>
-      <View style={styles.row}>
-        {renderButton('1')}
-        {renderButton('2')}
-        {renderButton('3')}
+      <Text style={styles.numberDisplay}>{phoneNumber || "Enter Number"}</Text>
+      <View style={styles.dialpad}>
+        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"].map(
+          (num) => (
+            <TouchableOpacity
+              key={num}
+              style={styles.button}
+              onPress={() => handlePress(num)}
+            >
+              <Text style={styles.buttonText}>{num}</Text>
+            </TouchableOpacity>
+          )
+        )}
       </View>
-      <View style={styles.row}>
-        {renderButton('4')}
-        {renderButton('5')}
-        {renderButton('6')}
-      </View>
-      <View style={styles.row}>
-        {renderButton('7')}
-        {renderButton('8')}
-        {renderButton('9')}
-      </View>
-      <View style={styles.row}>
-        {renderButton('*')}
-        {renderButton('0')}
-        {renderButton('#')}
-      </View>
-      <View style={styles.actionRow}>
+      <View style={styles.actions}>
         <TouchableOpacity style={styles.callButton} onPress={handleCall}>
-          <Text style={styles.callButtonText}>Call</Text>
+          <Text style={styles.callText}>📞</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-          <Text style={styles.deleteButtonText}>⌫</Text>
+          <Text style={styles.deleteText}>⌫</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -60,55 +59,37 @@ const DialPad = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
-  phoneNumber: {
-    fontSize: 28,
-    marginBottom: 20,
-    color: '#333',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  actionRow: {
-    flexDirection: 'row',
-    marginTop: 20,
-  },
+  numberDisplay: { fontSize: 30, marginBottom: 20, fontWeight: "bold" },
+  dialpad: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center" },
   button: {
     width: 80,
     height: 80,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 5,
+    backgroundColor: "#ddd",
     borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    margin: 10,
-    elevation: 5,
   },
-  buttonText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
+  buttonText: { fontSize: 24, fontWeight: "bold" },
+  actions: { flexDirection: "row", marginTop: 20 },
   callButton: {
-    backgroundColor: 'green',
+    backgroundColor: "green",
     padding: 15,
     borderRadius: 50,
-    marginRight: 20,
+    marginHorizontal: 10,
   },
-  callButtonText: {
-    color: 'white',
-    fontSize: 18,
-  },
+  callText: { fontSize: 24, color: "white" },
   deleteButton: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     padding: 15,
     borderRadius: 50,
+    marginHorizontal: 10,
   },
-  deleteButtonText: {
-    color: 'white',
-    fontSize: 18,
-  },
+  deleteText: { fontSize: 24, color: "white" },
 });
 
-export default DialPad;
+export default Dialpad;
