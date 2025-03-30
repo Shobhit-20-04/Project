@@ -52,5 +52,57 @@ export default function DialpadScreen() {
 }
 
 const styles = StyleSheet.create({
-  // Styles as previously provided
+  // Define your styles here
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  phoneNumber: {
+    fontSize: 24,
+    marginBottom: 20,
+    color: '#333',
+  },
+  dialpad: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  button: {
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 5,
+    backgroundColor: '#ddd',
+    borderRadius: 30,
+  },
+  buttonText: {
+    fontSize: 24,
+    color: '#333',
+  },
+  controls: {
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  callButton: {
+    marginRight: 20,
+    padding: 10,
+    backgroundColor: '#4CAF50',
+    borderRadius: 5,
+  },
+  callText: {
+    fontSize: 18,
+    color: '#fff',
+  },
+  backspaceButton: {
+    padding: 10,
+    backgroundColor: '#f44336',
+    borderRadius: 5,
+  },
+  backspaceText: {
+    fontSize: 18,
+    color: '#fff',
+  },
 });
