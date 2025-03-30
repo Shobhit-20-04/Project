@@ -1,42 +1,71 @@
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Tts from "react-native-tts";
+import Voice from "@react-native-voice/voice";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const CallScreen = () => {
+  const route = useRoute();
   const navigation = useNavigation();
+  const phoneNumber = route?.params?.phoneNumber || "Unknown"; // ✅ Handle undefined phoneNumber
+
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [recognizedText, setRecognizedText] = useState("");
 
   useEffect(() => {
-    // Check if TTS is initialized before using it
+    // ✅ Check if Tts is available before calling
     Tts.getInitStatus()
       .then(() => {
         Tts.setDefaultLanguage("en-US");
-        Tts.setDucking(true);
+        if (phoneNumber !== "Unknown") {
+          Tts.speak(`Calling ${phoneNumber}`);
+        } else {
+          Tts.speak("Calling an unknown number");
+        }
       })
-      .catch((error) => {
-        console.error("TTS Error:", error);
-        Alert.alert("TTS Error", "Text-to-Speech is not available.");
-      });
+      .catch((error) => console.log("TTS Error:", error));
+
+    // ✅ Voice Recognition Listeners
+    Voice.onSpeechStart = () => setIsSpeaking(true);
+    Voice.onSpeechEnd = () => setIsSpeaking(false);
+    Voice.onSpeechResults = (event) => {
+      setRecognizedText(event.value[0]);
+    };
 
     return () => {
-      Tts.stop();
+      Voice.destroy().then(Voice.removeAllListeners);
     };
-  }, []);
+  }, [phoneNumber]);
 
-  const startTTS = () => {
-    Tts.speak("Calling...");
+  const startListening = async () => {
+    try {
+      await Voice.start("en-US");
+    } catch (error) {
+      console.log("Voice Recognition Error:", error);
+    }
   };
 
-  const endCall = () => {
-    Tts.speak("Call ended");
+  const stopCall = () => {
+    Tts.stop();
+    Voice.stop();
     navigation.goBack();
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.callingText}>Calling...</Text>
-      <TouchableOpacity style={styles.endCallButton} onPress={endCall}>
-        <Text style={styles.endCallText}>End Call</Text>
+      <Text style={styles.callingText}>Calling {phoneNumber}</Text>
+
+      <TouchableOpacity onPress={startListening} style={styles.micButton}>
+        <Ionicons name="mic" size={30} color="white" />
+      </TouchableOpacity>
+
+      <Text style={styles.recognizedText}>
+        {recognizedText ? `You said: ${recognizedText}` : "Listening..."}
+      </Text>
+
+      <TouchableOpacity onPress={stopCall} style={styles.endCallButton}>
+        <Ionicons name="call" size={30} color="white" />
       </TouchableOpacity>
     </View>
   );
@@ -47,7 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#1e1e1e",
+    backgroundColor: "#121212",
   },
   callingText: {
     fontSize: 24,
@@ -55,15 +84,21 @@ const styles = StyleSheet.create({
     color: "white",
     marginBottom: 20,
   },
-  endCallButton: {
-    backgroundColor: "red",
-    padding: 15,
+  micButton: {
+    padding: 20,
     borderRadius: 50,
+    backgroundColor: "#444",
+    marginBottom: 20,
   },
-  endCallText: {
-    color: "white",
+  recognizedText: {
     fontSize: 18,
-    fontWeight: "bold",
+    color: "white",
+    marginBottom: 20,
+  },
+  endCallButton: {
+    padding: 20,
+    borderRadius: 50,
+    backgroundColor: "red",
   },
 });
 
