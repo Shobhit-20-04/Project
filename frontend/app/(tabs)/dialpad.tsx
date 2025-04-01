@@ -32,7 +32,7 @@ export default function Dialpad() {
       {/* Display entered phone number */}
       <TextInput style={styles.input} value={phoneNumber} editable={false} placeholder="Enter Number" />
 
-      {/* Dial pad with proper structure */}
+      {/* Dial pad */}
       <View style={styles.dialpad}>
         {[
           ["1", "2", "3"],

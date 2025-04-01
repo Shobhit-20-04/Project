@@ -8,7 +8,7 @@ export default function Layout() {
       <Tabs.Screen name="dialpad" options={{ title: "Dialpad" }} />
       <Tabs.Screen name="callhistory" options={{ title: "Call History" }} />
       <Tabs.Screen name="ai" options={{ title: "AI Assistant" }} />
-      <Tabs.Screen name="explore" options={{ title: "Explore" }} />
+      <Tabs.Screen name="Profile" options={{ title: "Profile" }} />
     </Tabs>
   );
 }
